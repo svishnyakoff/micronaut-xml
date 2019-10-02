@@ -20,17 +20,35 @@ repositories {
     jcenter()
 }
 
-dependencies {
-    // This dependency is exported to consumers, that is to say found on their compile classpath.
-    api 'org.apache.commons:commons-math3:3.6.1'
+sourceCompatibility = 1.8
 
-    // This dependency is used internally, and not exposed to consumers on their own compile classpath.
-    implementation 'com.google.guava:guava:27.0.1-jre'
+def dependencyVersion = [
+        'micronaut':micronautVersion
+]
+
+def resolvedDependencyVersion = { groupWithArtifact, String versionName ->
+    return "${groupWithArtifact}:${dependencyVersion[versionName]}"
+}
+
+dependencies {
+    compile "com.fasterxml.jackson.dataformat:jackson-dataformat-xml:${jacksonVersion}"
+    compile "com.fasterxml:aalto-xml:${aaltoXmlVersion}"
+
+    annotationProcessor resolvedDependencyVersion("io.micronaut:micronaut-inject-java", "micronaut")
+    compileOnly resolvedDependencyVersion("io.micronaut:micronaut-http", "micronaut")
+    compileOnly resolvedDependencyVersion("io.micronaut:micronaut-inject", "micronaut")
+    compileOnly resolvedDependencyVersion("io.micronaut:micronaut-http-server-netty", "micronaut")
+    compileOnly resolvedDependencyVersion("io.micronaut:micronaut-inject-java", "micronaut")
+
+    testAnnotationProcessor resolvedDependencyVersion("io.micronaut:micronaut-inject-java", "micronaut")
+    testCompile resolvedDependencyVersion("io.micronaut:micronaut-inject-groovy", "micronaut")
+    testCompile resolvedDependencyVersion("io.micronaut:micronaut-http-client", "micronaut")
+    testCompile resolvedDependencyVersion("io.micronaut:micronaut-runtime", "micronaut")
+    testCompile resolvedDependencyVersion("io.micronaut:micronaut-http-server-netty", "micronaut")
 
     // Use the latest Groovy version for Spock testing
     testImplementation 'org.codehaus.groovy:groovy-all:2.5.6'
 
     // Use the awesome Spock testing and specification framework even with Java
     testImplementation 'org.spockframework:spock-core:1.2-groovy-2.5'
-    testImplementation 'junit:junit:4.12'
 }
